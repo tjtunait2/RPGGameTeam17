@@ -1,7 +1,8 @@
 package sample;
 
-import java.util.Random;
 import javafx.scene.image.Image;
+
+import java.util.Random;
 
 public class Enemy extends Actor{
 
@@ -21,10 +22,21 @@ public class Enemy extends Actor{
     double randomOffset, bulletGravity = 0.2, cheeseGravity = 0.1;
     Main main;
     int iBagelLocation;
+    protected float dx;
+    protected float dy;
+
+    protected float maxSpeed = 4f;
+    protected float acc = 2f;
+    protected float deacc = 0.3f;
+
+    protected boolean up = false;
+    protected boolean down = false;
+    protected boolean right = false;
+    protected boolean left = false;
 
     public Enemy(Main main, String SVGdata, double xLocation, double yLocation, Image... spriteCels) {
         super(SVGdata, xLocation, yLocation, spriteCels);
-        main = main;
+        this.main = main;
         spriteFrame.setTranslateX(xLocation);
         spriteFrame.setTranslateY(yLocation);
        /* isAlive = true;
@@ -34,7 +46,9 @@ public class Enemy extends Actor{
 
     @Override
     public void update() {
-        if(!callAttack) {
+        setXY();
+        moveEnemy(iX, iY);
+        /*if(!callAttack) {
             if(attackCounter >= attackFrequency) {
                 attackCounter = 0;
                 spriteMoveR = 700;
@@ -65,8 +79,84 @@ public class Enemy extends Actor{
             } else {
                 pauseCounter++;
             }
-        }
+        }*/
     }
+
+    private void moveEnemy(double x, double y) {
+        spriteFrame.setTranslateX(x);
+        spriteFrame.setTranslateY(y);
+    }
+
+    public void setXY() {
+        if(main.main.IsInRange(main.iBeagle)) {
+            if (main.iBeagle.iY> main.main.iY) {
+
+                dy -= acc;
+                if (dy < -maxSpeed) {
+                    dy = -maxSpeed;
+                }
+            } else {
+                if (dy < 0) {
+                    dy += deacc;
+                    if (dy > 0) {
+                        dy = 0;
+                    }
+                }
+            }
+
+            if (main.iBeagle.iY< main.main.iY) {
+
+                dy += acc;
+                if (dy > maxSpeed) {
+                    dy = maxSpeed;
+                }
+            } else {
+                if (dy > 0) {
+                    dy -= deacc;
+                    if (dy < 0) {
+                        dy = 0;
+                    }
+                }
+            }
+
+            if (main.iBeagle.iX> main.main.iX) {
+
+                dx -= acc;
+                if (dx < -maxSpeed) {
+                    dx = -maxSpeed;
+                }
+            } else {
+                if (dx < 0) {
+                    dx += deacc;
+                    if (dx > 0) {
+                        dx = 0;
+                    }
+                }
+            }
+
+            if (main.iBeagle.iX< main.main.iX) {
+
+                dx += acc;
+                if (dx > maxSpeed) {
+                    dx = maxSpeed;
+                }
+            } else {
+                if (dx > 0) {
+                    dx -= deacc;
+                    if (dx < 0) {
+                        dx = 0;
+                    }
+                }
+            }
+        } else {
+            dx=0;
+            dy=0;
+        }
+        iX+=dx/5;
+        iY+=dy/5;
+    }
+
+
 
     private void initiateAttack() {
         if(!takeSides) {
@@ -218,4 +308,8 @@ public class Enemy extends Actor{
         main.castDirector.addCurrentCast(main.iBeagle);
         main.root.getChildren().add(main.iBeagle.spriteFrame);
     }
+
+
+
+
 }
